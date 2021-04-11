@@ -14,7 +14,7 @@
 #include <cstring>
 #include <vector>
 #include <map>
-#include <optional>
+#include <experimental/optional>
 #ifdef NDEBUG
     const bool  enableValidationLayers = false;
 #else
@@ -28,11 +28,11 @@ const std::vector<const char *> validationLayers = {
 VkPhysicalDevice  physicalDevice = VK_NULL_HANDLE;
 struct      QueueFamilyIndices
 {
-    std::optional<uint32_t>    graphicsFamily;
+    std::experimental::optional<uint32_t>    graphicsFamily;
 
     bool    isComplete()
     {
-        return (graphicsFamily.has_value());
+        return (graphicsFamily.value());
     }
 };
 
@@ -139,19 +139,15 @@ void    pickPhysicalDevice()
         std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
         vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDevices.data());
 
-        throw std::runtime_error("Failed to find suitable GPU");
 
-        std::multimap<int, VkPhysicalDevice> gpuCandidates;
-        for (const auto &candidate : gpuCandidates)
+        for (const auto &candidate : physicalDevices)
         {
-            int     score = rateDeviceSuitability(candidate);
-            gpuCandidates.insert(std::make_pair(score, candidate));
-            if (gpuCandidates.rbegin()->first > 0)
-                physicalDevice = gpuCandidates.rbegin()->second;
-            else
-                throw std::runtime_error("Failed to find suitable GPU");
-
+            if (isDeviceSuitable(candidate))
+                physicalDevice = candidate;
+            break;
         }
+        if (physicalDevice == VK_NULL_HANDLE)
+            std::runtime_error("Failed to find GPU");
 
 }
 
@@ -189,23 +185,23 @@ void    createLogicalDevice()
         vkGetDeviceQueue(device, familyIndices.graphicsFamily.value(), 0, &graphicsQueue);
 }
 
-int     rateDeviceSuitability(VkPhysicalDevice device)
-{
-        VkPhysicalDeviceProperties deviceProperties;
-        VkPhysicalDeviceFeatures deviceFeatures;
-        vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
-        vkGetPhysicalDeviceFeatures(physicalDevice, &deviceFeatures);
-        int     score = 0;
-        if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-            score += 1000;
-
-        score += deviceProperties.limits.maxImageDimension2D;
-
-        if (!deviceFeatures.geometryShader)
-            return (0);
-
-    return (score);
-}
+//int     rateDeviceSuitability(VkPhysicalDevice device)
+//{
+//        VkPhysicalDeviceProperties deviceProperties;
+//        VkPhysicalDeviceFeatures deviceFeatures;
+//        vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
+//        vkGetPhysicalDeviceFeatures(physicalDevice, &deviceFeatures);
+//        int     score = 0;
+//        if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+//            score += 1000;
+//
+//        score += deviceProperties.limits.maxImageDimension2D;
+//
+//        if (!deviceFeatures.geometryShader)
+//            return (0);
+//
+//    return (score);
+//}
 
 QueueFamilyIndices    findQueueFamilies(VkPhysicalDevice device)
 {
@@ -228,11 +224,6 @@ QueueFamilyIndices    findQueueFamilies(VkPhysicalDevice device)
 
 bool    isDeviceSuitable(VkPhysicalDevice physicalDevices)
 {
-        VkPhysicalDeviceProperties deviceProperties;
-        VkPhysicalDeviceFeatures deviceFeatures;
-        vkGetPhysicalDeviceProperties(physicalDevices, &deviceProperties);
-        vkGetPhysicalDeviceFeatures(physicalDevices, &deviceFeatures);
-
         QueueFamilyIndices indices = findQueueFamilies(physicalDevices);
         return (indices.isComplete());
 }
