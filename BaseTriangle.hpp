@@ -14,7 +14,7 @@
 #include <cstring>
 #include <vector>
 #include <map>
-#include <experimental/optional>
+#include <optional>
 #ifdef NDEBUG
     const bool  enableValidationLayers = false;
 #else
@@ -28,7 +28,7 @@ const std::vector<const char *> validationLayers = {
 VkPhysicalDevice  physicalDevice = VK_NULL_HANDLE;
 struct      QueueFamilyIndices
 {
-    std::experimental::optional<uint32_t>    graphicsFamily;
+    std::optional<uint32_t>    graphicsFamily;
 
     bool    isComplete()
     {
