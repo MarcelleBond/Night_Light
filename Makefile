@@ -1,6 +1,6 @@
 VULKAN_SDK_PATH = /home/ntsako/VulkanSDK/1.2.162.1/x86_64
 
-CFLAGS = -std=c++17 -I$(VULKAN_SDK_PATH)/include
+CFLAGS = -std=c++17 -g -I$(VULKAN_SDK_PATH)/include
 LDFLAGS = -I$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan
 NAME	=	nightLight
 all:	$(NAME)
