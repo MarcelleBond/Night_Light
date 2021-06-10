@@ -4,3 +4,8 @@
 
 #include "BaseTriangle.hpp"
 
+
+
+
+
+static_assert();
