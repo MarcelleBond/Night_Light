@@ -6,7 +6,7 @@ NAME	=	nightLight
 all:	$(NAME)
 
 $(NAME):	main.cpp
-	g++ $(CFLAGS) -o nightLight main.cpp $(LDFLAGS)
+	g++ $(CFLAGS) -o nightLight main.cpp BaseTriangle.cpp ApplicationDebug.cpp $(LDFLAGS)
 
 .PONY:	test	clean
 
